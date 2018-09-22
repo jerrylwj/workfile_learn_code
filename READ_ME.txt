@@ -1,1 +1,2 @@
-UP UP DAY learn learn study.
+UP UP DAY learn learn study. 
+hello git!
