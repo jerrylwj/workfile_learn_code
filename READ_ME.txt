@@ -1,1 +1,1 @@
-UP UP DAY
+UP UP DAY learn learn study.
