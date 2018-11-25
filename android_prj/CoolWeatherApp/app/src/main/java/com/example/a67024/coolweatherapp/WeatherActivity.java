@@ -5,11 +5,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -54,8 +57,11 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView sportTxt;
 
-    private SwipeRefreshLayout swipeRefresh;
+    public SwipeRefreshLayout swipeRefresh;
     private String weather_id;
+
+    public DrawerLayout drawerLayout;
+    private Button navBtn;
 
     private static final String WEATHER_URL = "http://guolin.tech/api/weather?cityid=";
     private static final String KEY_URL = "2eae25e74f36404ab4b36389f7940eb1";
@@ -92,6 +98,14 @@ public class WeatherActivity extends AppCompatActivity {
         bing_img = findViewById(R.id.bing_pic_img);
         swipeRefresh = findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        navBtn = findViewById(R.id.nav_button);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
         SharedPreferences sp  = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = sp.getString(SP_WEATHER, null);
@@ -145,7 +159,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-    public  void requestWeather(final String weatherId) {
+    public void requestWeather(final String weatherId) {
         String weatherUrl = WEATHER_URL + weatherId + "&key=" + KEY_URL;
         Log.d(TAG,"requestWeather weatherUrl = " + weatherUrl);
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {

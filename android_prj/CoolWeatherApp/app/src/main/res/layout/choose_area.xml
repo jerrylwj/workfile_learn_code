@@ -9,6 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary">
+
+        <Button
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/commMarginSize"
+            android:id="@+id/back_btn"
+            android:background="@mipmap/ic_launcher"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -17,13 +26,6 @@
             android:text="hello."
             android:id="@+id/title_text"
             android:textSize="20sp"/>
-        <Button
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:id="@+id/back_button"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:background="@mipmap/back_img" />
     </RelativeLayout>
     <ListView
         android:layout_width="match_parent"
