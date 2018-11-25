@@ -2,16 +2,23 @@ package com.example.a67024.coolweatherapp;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +38,6 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.internal.Util;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,12 +61,13 @@ public class ChooseAreaFragment extends Fragment {
 
     private List<Province> provinceList;
     private List<City> cityList;
-    private List<County> countyLIst;
+    private List<County> countyList;
 
     private Province selectedProvince;
     private City selectedCity;
     private int currentLevel;
 
+    private static final String SERVER_ADDRESS = "http://guolin.tech/api/china";
     public ChooseAreaFragment() {
         // Required empty public constructor
     }
@@ -87,9 +94,15 @@ public class ChooseAreaFragment extends Fragment {
                 if (currentLevel == LEVEL_PROVINCE) {
                     selectedProvince = provinceList.get(position);
                     queryCities();
-                } else if (currentLevel == LEVEL_COUNTY) {
+                } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -119,17 +132,48 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         } else {
-            String address = "http://guolin.tech/api/china";
-            queryFromServer(address, TYPE_PROVINCE);
+            Log.d(TAG, "province address = " + TYPE_PROVINCE);
+            queryFromServer(SERVER_ADDRESS, TYPE_PROVINCE);
         }
     }
 
     private void queryCities() {
-
+        titleText.setText(selectedProvince.getProvinceName());
+        backButton.setVisibility(View.VISIBLE);
+        cityList = DataSupport.where("provinceId=?", String.valueOf(selectedProvince.getId())).find(City.class);
+        if (cityList.size() > 0) {
+            dataList.clear();
+            for (City city: cityList) {
+                dataList.add(city.getCityName());
+            }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            currentLevel = LEVEL_CITY;
+        } else {
+            int provinceCode = selectedProvince.getProvinceCode();
+            String address = SERVER_ADDRESS + "/" + provinceCode;
+            Log.d(TAG, "city address = " + address);
+            queryFromServer(address, TYPE_CITY);
+        }
     }
 
     private void queryCounties() {
-
+        titleText.setText(selectedCity.getCityName());
+        backButton.setVisibility(View.VISIBLE);
+        countyList = DataSupport.where("cityId=?", String.valueOf(selectedCity.getId())).find(County.class);
+        if (countyList.size() > 0) {
+            dataList.clear();
+            for (County county: countyList) {
+                dataList.add(county.getCountyName());
+            }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            currentLevel = LEVEL_COUNTY;
+        } else {
+            String address = SERVER_ADDRESS + "/" + selectedProvince.getProvinceCode() + "/" + selectedCity.getCityCode();
+            Log.d(TAG, "county address = " + address);
+            queryFromServer(address, TYPE_COUNTY);
+        }
     }
 
     private void queryFromServer(String address, final String type) {
@@ -138,13 +182,15 @@ public class ChooseAreaFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 closeProgressDialog();
-                Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+                mHandler.sendMessage(mHandler.obtainMessage(SHOW_NOTICE, "加载失败..."));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "onResponse enter.");
                 String responseStr = response.body().string();
                 boolean result = false;
+                Log.d(TAG, "onResponse enter. responseStr = " + responseStr);
                 if (TYPE_PROVINCE.equalsIgnoreCase(type)) {
                     result = Utility.handleProvinceResponse(responseStr);
                 } else if (TYPE_CITY.equalsIgnoreCase(type)) {
@@ -154,11 +200,11 @@ public class ChooseAreaFragment extends Fragment {
                 } else {
                     Log.d(TAG, "onResponse = " + type);
                 }
+                Log.d(TAG, "onResponse type = " + type + " result = " + result);
                 if (result) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            closeProgressDialog();
                             if (TYPE_PROVINCE.equalsIgnoreCase(type)) {
                                 queryProvinces();
                             }else if (TYPE_CITY.equalsIgnoreCase(type)) {
@@ -168,10 +214,30 @@ public class ChooseAreaFragment extends Fragment {
                             }
                         }
                     });
+                } else {
+                    mHandler.sendMessage(mHandler.obtainMessage(SHOW_NOTICE, "has no city or county."));
                 }
+                closeProgressDialog();
             }
         });
     }
+
+    private static final int SHOW_NOTICE = 1;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int type = msg.what;
+            switch (type) {
+                case SHOW_NOTICE:
+                    showToast((String) msg.obj);
+                    break;
+                default:
+                    Log.d(TAG, "type = " + type);
+                    break;
+            }
+        }
+    };
+
 
     private void showProgressDiaglog() {
         if (progressDialog == null) {
@@ -188,4 +254,18 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
+    private void showToast(String message) {
+        if (message != null) {
+            Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            LinearLayout layout = (LinearLayout) toast.getView();
+            TextView tv_msg = (TextView)layout.findViewById(android.R.id.message);
+            ImageView image = new ImageView(getContext());
+            image.setImageResource(R.mipmap.warning_pic);
+            image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            layout.addView(image, 0);
+            tv_msg.setTextColor(Color.BLUE);
+            toast.show();
+        }
+    }
 }

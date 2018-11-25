@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/commMarginSize"
+    android:background="#8000">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/commMarginSize"
+        android:layout_marginTop="@dimen/commMarginSize"
+        android:text="生活建议"
+        android:textColor="@color/colorTitle"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/comfort_txt"
+        android:layout_margin="@dimen/commMarginSize"
+        android:textColor="@color/colorTitle"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/car_wash_txt"
+        android:layout_margin="@dimen/commMarginSize"
+        android:textColor="@color/colorTitle"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sport_txt"
+        android:layout_margin="@dimen/commMarginSize"
+        android:textColor="@color/colorTitle"/>
+</LinearLayout>
