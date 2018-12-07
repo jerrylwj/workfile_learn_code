@@ -191,11 +191,11 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString(SP_WEATHER, responseTxt);
                             editor.apply();
                             weather_id = weather.getWeatherId();
-                            swipeRefresh.setRefreshing(false);
                             showWeatherInfo(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }

@@ -108,6 +108,8 @@ public class ChooseAreaFragment extends Fragment {
                         WeatherActivity activity = (WeatherActivity)getActivity();
                         activity.drawerLayout.closeDrawers();
                         activity.swipeRefresh.setRefreshing(true);
+                        activity.swipeRefresh.setColorSchemeResources(android.R.color.holo_blue_bright,
+                                android.R.color.holo_green_light, android.R.color.holo_red_light);
                         activity.requestWeather(weatherId);
                     }
 
@@ -232,7 +234,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private static final int SHOW_NOTICE = 1;
     private Handler mHandler = new Handler() {
-        @Override
+         @Override
         public void handleMessage(Message msg) {
             int type = msg.what;
             switch (type) {
@@ -267,7 +269,7 @@ public class ChooseAreaFragment extends Fragment {
             Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             LinearLayout layout = (LinearLayout) toast.getView();
-            TextView tv_msg = (TextView)layout.findViewById(android.R.id.message);
+            TextView tv_msg = layout.findViewById(android.R.id.message);
             ImageView image = new ImageView(getContext());
             image.setImageResource(R.mipmap.warning_pic);
             image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
