@@ -65,9 +65,9 @@ public class WeatherActivity extends AppCompatActivity {
 
     public static final String WEATHER_URL = "http://guolin.tech/api/weather?cityid=";
     public static final String KEY_URL = "2eae25e74f36404ab4b36389f7940eb1";
-    private static final String IMG_URL = "http://guolin.tech/api/bing_pic";
-    private static final String SP_BING_PIC = "bing_pic";
-    private static final String SP_WEATHER = "weather";
+    public static final String IMG_URL = "http://guolin.tech/api/bing_pic";
+    public static final String SP_BING_PIC = "bing_pic";
+    public static final String SP_WEATHER = "weather";
     private static final String TAG = "WeatherActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
