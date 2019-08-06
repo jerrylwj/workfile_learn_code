@@ -3,7 +3,9 @@ package com.lwj.recyclerviewhorizontalscrolldel;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
 import android.view.WindowManager;
+
 
 public class Utils {
     private static final String TAG = "Utils";
